@@ -1,0 +1,20 @@
+{
+  "name": "serverless-s3-assets",
+  "version": "0.0.1",
+  "description": "Uploads requested assets to S3 as part of Serverless deploy",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.6.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dittto/serverless-s3-assets.git"
+  },
+  "keywords": [
+    "serverless",
+    "package",
+    "includes"
+  ],
+  "author": "Nick Stacey @ditt_to",
+  "license": "ISC",
+}
