@@ -30,9 +30,18 @@ class S3Assets {
     }
 
     remove(config) {
+        // get config
+        const interpreter = new ConfigIntepreter()
+        const files = interpreter.get(config);
+
         // empty files from bucket
-        // const s3Uploader = new S3Uploader(new AWS.S3());
-        // return s3Uploader.removeAllFiles(config.bucket);
+        const s3Uploader = new S3Uploader(new AWS.S3());
+        const buckets = [];
+        for (let file of files) {
+            buckets[buckets.length] = file.getBucket();
+        }
+
+        return s3Uploader.removeAllFiles(buckets);
     }
 }
 

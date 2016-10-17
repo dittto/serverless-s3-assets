@@ -66,8 +66,40 @@ class S3Uploader {
         });
     }
 
-    removeAllFiles(bucket) {
-        console.log('remove all files');
+    removeAllFiles(buckets) {
+        const listPromises = [];
+        for (let bucket of buckets) {
+            const params = {
+                Bucket: bucket
+            };
+
+            listPromises[listPromises.length] = new Promise((resolve, reject) => {
+                this.s3.listObjectsV2(params).promise().then(
+                    values => {
+                        const keys = [];
+                        for (let value of values.Contents) {
+                            keys[keys.length] = {Key: value.Key};
+                        }
+                        resolve({bucket: bucket, keys: keys});
+                    }
+                );
+            });
+        }
+
+        const returnPromises = [];
+        Promise.all(listPromises).then(data => {
+            for (let val of data) {
+                const params = {
+                    Bucket: val.bucket,
+                    Delete: {
+                        Objects: val.keys
+                    }
+                };
+                returnPromises[returnPromises.length] = this.s3.deleteObjects(params).promise();
+            }
+        });
+
+        return Promise.all(returnPromises);
     }
 }
 
