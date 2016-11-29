@@ -1,8 +1,10 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const FS = require('fs');
 const ConfigIntepreter = require('./src/ConfigInterpreter');
 const S3Uploader = require('./src/S3Uploader');
+const S3File = require('./src/S3File');
 
 class S3Assets {
     constructor(serverless, options) {
@@ -12,31 +14,23 @@ class S3Assets {
         serverless.service.package.exclude = exclude instanceof Array ? exclude.concat(excludedFiles) : excludedFiles;
 
         // init hooks
-        const config = serverless.service.custom.s3Assets || [];
+        const interpreter = new ConfigIntepreter(FS, S3File, serverless.cli);
+        const s3Uploader = new S3Uploader(new AWS.S3(), FS, serverless.cli);
+        const config = serverless.service.custom && serverless.service.custom.s3Assets ? serverless.service.custom.s3Assets : [];
         this.hooks = {
-            'after:deploy:deploy': this.before.bind(this, config, serverless.cli),
-            'before:remove:remove': this.remove.bind(this, config)
+            'after:deploy:deploy': this.deploy.bind(this, interpreter, s3Uploader, config),
+            'before:remove:remove': this.remove.bind(this, interpreter, s3Uploader, config)
         };
     }
 
-    before(config, logger) {
-        // get config
-        const interpreter = new ConfigIntepreter()
+    deploy(interpreter, s3Uploader, config) {
         const files = interpreter.get(config);
-
-        // upload files to S3
-        const s3Uploader = new S3Uploader(new AWS.S3(), logger);
         return s3Uploader.uploadAllToBucket(files);
     }
 
-    remove(config) {
-        // get config
-        const interpreter = new ConfigIntepreter()
-        const files = interpreter.get(config);
-
-        // empty files from bucket
-        const s3Uploader = new S3Uploader(new AWS.S3());
+    remove(interpreter, s3Uploader, config) {
         const buckets = [];
+        const files = interpreter.get(config);
         for (let file of files) {
             buckets[buckets.length] = file.getBucket();
         }

@@ -20,15 +20,17 @@ class S3File {
 
         if (settings.cacheControl) this.settings.cacheControl = settings.cacheControl;
         if (settings.cacheTime)    this.settings.cacheControl = 'max-age=' + settings.cacheTime;
-        if (settings.contentType)  this.settings.contentType = settings.contentType;
 
-        this.settings['metadata'] = Object.assign({}, this.settings['metadata']) || [];
+        if (settings.contentType) this.settings.contentType = settings.contentType;
+
         if (settings.metadata) this.settings.metadata = settings.metadata;
     }
 
     addFiles(files, config) {
         for (let file of files) {
-            const s3File = new S3File(file, this.filePath, this.relativePath, this.settings);
+            const settingsClone = Object.assign({}, this.settings);
+            settingsClone['metadata'] = Object.assign({}, settingsClone['metadata']);
+            const s3File = new S3File(file, this.filePath, this.relativePath, settingsClone);
             s3File.addSettings(config[file] || []);
             this.files[this.files.length] = s3File;
         }

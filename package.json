@@ -1,10 +1,17 @@
 {
   "name": "serverless-s3-assets",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Uploads requested assets to S3 as part of Serverless deploy",
   "main": "index.js",
   "dependencies": {
     "aws-sdk": "^2.6.9"
+  },
+  "devDependencies": {
+    "chai": "^3.5",
+    "coveralls": "^2.11.14",
+    "istanbul": "^0.4.5",
+    "mocha": "^2.4",
+    "mocha-lcov-reporter": "^1.2.0"
   },
   "repository": {
     "type": "git",
@@ -16,5 +23,17 @@
     "includes"
   ],
   "author": "Nick Stacey @ditt_to",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dittto/serverless-s3-assets/issues"
+  },
+  "homepage": "https://github.com/dittto/serverless-s3-assets#readme",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha",
+    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
+  }
 }

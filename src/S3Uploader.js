@@ -1,10 +1,9 @@
 'use strict';
 
-const FS = require('fs');
-
 class S3Uploader {
-    constructor(s3, logger) {
+    constructor(s3, FS, logger) {
         this.s3 = s3;
+        this.FS = FS;
         this.logger = logger;
     }
 
@@ -36,7 +35,7 @@ class S3Uploader {
             const params = {
                 Bucket: folder.getBucket(),
                 Key: file.getRelativePath(),
-                Body: FS.readFileSync(file.getFilePath()),
+                Body: this.FS.readFileSync(file.getFilePath()),
                 ACL: file.getAcl(),
                 CacheControl: file.getCacheControl(),
                 ContentType: file.getContentType(),
@@ -46,7 +45,7 @@ class S3Uploader {
             promises[promises.length] = new Promise((resolve, reject) => {
                 this.s3.upload(params, (err, data) => {
                     if (err) {
-                        console.log(err);
+                        this.logger.log(err);
                         reject(err);
                     }
                     resolve(data);
@@ -60,7 +59,7 @@ class S3Uploader {
                     resolve(values);
                 },
                 errors => {
-                    reject(reject);
+                    reject(errors);
                 }
             );
         });
@@ -87,19 +86,23 @@ class S3Uploader {
         }
 
         const returnPromises = [];
-        Promise.all(listPromises).then(data => {
-            for (let val of data) {
-                const params = {
-                    Bucket: val.bucket,
-                    Delete: {
-                        Objects: val.keys
-                    }
-                };
-                returnPromises[returnPromises.length] = this.s3.deleteObjects(params).promise();
-            }
-        });
 
-        return Promise.all(returnPromises);
+        return new Promise((resolve, reject) => {
+            Promise.all(listPromises).then(data => {
+                for (let val of data) {
+                    const params = {
+                        Bucket: val.bucket,
+                        Delete: {
+                            Objects: val.keys
+                        }
+                    };
+                    returnPromises[returnPromises.length] = this.s3.deleteObjects(params).promise();
+                }
+
+
+                Promise.all(returnPromises).then(values => resolve(values)).catch(e => reject(e));
+            });
+        });
     }
 }
 
