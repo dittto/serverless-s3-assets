@@ -15,7 +15,7 @@ class S3Assets {
 
         // init hooks
         const interpreter = new ConfigIntepreter(FS, S3File, serverless.cli);
-        const s3Uploader = new S3Uploader(new AWS.S3(), FS, serverless.cli);
+        const s3Uploader = new S3Uploader(new AWS.S3({ signatureVersion: 'v4' }), FS, serverless.cli);
         const config = serverless.service.custom && serverless.service.custom.s3Assets ? serverless.service.custom.s3Assets : [];
         this.hooks = {
             'after:deploy:deploy': this.deploy.bind(this, interpreter, s3Uploader, config),
