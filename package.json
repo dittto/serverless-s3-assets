@@ -1,6 +1,6 @@
 {
   "name": "serverless-s3-assets",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Uploads requested assets to S3 as part of Serverless deploy",
   "main": "index.js",
   "dependencies": {
