@@ -4,7 +4,8 @@
   "description": "Uploads requested assets to S3 as part of Serverless deploy",
   "main": "index.js",
   "dependencies": {
-    "aws-sdk": "^2.6.9"
+    "aws-sdk": "^2.6.9",
+    "mime-types": "^2.1.18"
   },
   "devDependencies": {
     "chai": "^3.5",
