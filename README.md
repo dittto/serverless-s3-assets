@@ -8,7 +8,7 @@ Sometimes you have some fixed assets that need to be uploaded to S3, such as ima
 
 To use this, you'll need to specify the files to copy to your bucket. You do this in serverless.yml:
 
-```
+```yaml
 plugins:
   - serverless-s3-assets
 
@@ -35,6 +35,24 @@ The `test-html` is the relative folder name of the files to upload to the bucket
 
 Any other options specified will be treated as sub-folder names, like `templates` above. This also shows you how to have sub-folders with different settings. By default, all files and folders within the specified root folder name will be uploaded with the same options as that root folder.
 
+### Commands
+
+The code will trigger automatically during a `serverless deploy` and `serverless remove`.
+
+You can also carry out S3 deployment or removal independent from stack deployments:
+
+```yaml
+sls s3delpoy
+
+sls s3remove
+```
+
+If you have defined multiple assets (folders) you can limit the action to a single one:
+
+```yaml
+sls s3delpoy --asset test-html
+```
+
 ### Gotchas
 
 Make sure you don't add any additional files to your bucket that you're specifying in s3Assets. If you do and then run `serverless remove` then those additional files will also be removed.
@@ -42,7 +60,3 @@ Make sure you don't add any additional files to your bucket that you're specifyi
 ### Permissions
 
 You don't need any special permissions for your Lambda as the code is run by Serverless instead.
-
-### Commands
-
-The code will trigger automatically during a `serverless deploy`.
