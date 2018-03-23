@@ -47,9 +47,12 @@ describe('src/ConfigInterpreter', function () {
         const FS = {
             readdirSync: (folder) => {
                 return [folder, 'a', 'b'];
+            },
+            lstatSync: (folder) => {
+                return { isDirectory: () => true }
             }
         };
-        const config = new ConfigInterpreter(FS, {}, {});
+        const config = new ConfigInterpreter(FS, {}, console);
         expect(config.getFilesForFolder('folder')).to.have.same.members(['folder', 'a', 'b']);
     });
 
@@ -57,6 +60,9 @@ describe('src/ConfigInterpreter', function () {
         const FS = {
             readdirSync: (folder) => {
                 throw new Error('Test fail');
+            },
+            lstatSync: (folder) => {
+                return { isDirectory: () => true }
             }
         };
         const logger = {
@@ -88,7 +94,10 @@ describe('src/ConfigInterpreter', function () {
                     return {getName: () => 'f', getFilePath: () => folder, getFiles: () => [FS.readdirSync('a/c/f/h'), FS.readdirSync('a/c/f/i')], addFiles: (files) => {FS.storedFiles.push({folder, files})}};
                 }
                 return {getName: () => folder, getFilePath: () => folder, getFiles: () => [], addFiles: (files) => {FS.storedFiles.push({folder, files})}};
-            }
+            },
+            lstatSync: (folder) => {
+                return { isDirectory: () => true }
+            }            
         };
         const config = new ConfigInterpreter(FS, {}, {});
         config.getSubs([FS.readdirSync('a')], {});
@@ -106,6 +115,9 @@ describe('src/ConfigInterpreter', function () {
                     return ['a/c/e', 'a/c/f', 'a/c/g'];
                 }
                 return [];
+            },
+            lstatSync: (folder) => {
+                return { isDirectory: () => true }
             }
         };
         const config = new ConfigInterpreter(FS, FullS3FileTest, {});
