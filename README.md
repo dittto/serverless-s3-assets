@@ -30,7 +30,7 @@ The `test-html` is the relative folder name of the files to upload to the bucket
 - isPublic: set this to true or false to override any ACL setting. True is the same as `public-read` and false is the same as `private`.
 - cacheControl: Any cache control settings.
 - cacheTime: This overrides any existing cache-control settings and sets a max-age for the file.
-- contentType: The type of content we're uploading, if not obvious.
+- contentType: default type of content we're uploading, if not obvious. Plugin will try to derive the type from file extention first.
 - metadata: Any extra metadata to upload.
 
 Any other options specified will be treated as sub-folder names, like `templates` above. This also shows you how to have sub-folders with different settings. By default, all files and folders within the specified root folder name will be uploaded with the same options as that root folder.

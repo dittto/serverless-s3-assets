@@ -1,6 +1,4 @@
 'use strict';
-
-const mime = require('mime-types');
 class S3Uploader {
     constructor(s3, FS, logger) {
         this.s3 = s3;
@@ -39,7 +37,7 @@ class S3Uploader {
                 Body: this.FS.readFileSync(file.getFilePath()),
                 ACL: file.getAcl(),
                 CacheControl: file.getCacheControl(),
-                ContentType: mime.lookup(file.getFilePath()) || file.getContentType(),
+                ContentType: file.getContentType(),
                 Metadata: file.getMetadata()
             };
 
