@@ -129,4 +129,53 @@ describe('src/ConfigInterpreter', function () {
         expect(files[0].getFiles()[1].getFiles()[1].getFilePath()).to.equal('a/c/f');
         expect(files[0].getFiles()[1].getFiles()[2].getFilePath()).to.equal('a/c/g');
     });
+
+    it('skip all folders except given in options', function () {
+        const FS = {
+            readdirSync: (folder) => {
+                if (folder === 'a') {
+                    return ['a/b', 'a/c', 'a/d'];
+                }
+                if (folder === 'b') {
+                    return ['b/a', 'b/b'];
+                }
+                return [];
+            },
+            lstatSync: (folder) => {
+                return { isDirectory: () => true }
+            }
+        };
+        const config = new ConfigInterpreter(FS, FullS3FileTest, console);
+        const files = config.get({'a': [], 'b': []}, {'asset': 'b' });
+        expect(files[0].getFilePath()).to.equal('b');
+        expect(files[0].getFiles()[0].getFilePath()).to.equal('b/a');
+        expect(files[0].getFiles()[1].getFilePath()).to.equal('b/b');
+    });
+
+    it('do not try to iterate files as folders', function () {
+        const FS = {
+            readdirSync: (folder) => {
+                if (folder === 'a') {
+                    return ['a'];
+                }
+                if (folder === 'b') {
+                    return ['b'];
+                }
+                return [];
+            },
+            lstatSync: (folder) => {
+                return { isDirectory: () => {
+                        if (folder == 'a') {
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                }
+            }
+        };
+        const config = new ConfigInterpreter(FS, FullS3FileTest, console);
+        expect(config.getFilesForFolder('a')).to.have.same.members(['a']);
+        expect(config.getFilesForFolder('b')).to.have.same.members([]);
+    });       
 });
