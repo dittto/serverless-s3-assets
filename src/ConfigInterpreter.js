@@ -7,10 +7,14 @@ class ConfigInterpreter {
         this.logger = logger;
     }
 
-    get(config) {
+    get(config, options) {
         // loop through each first-level of files / folders defined
         const folders = [];
         for (let folder of Object.keys(config)) {
+            if(options && options.asset && options.asset !== folder) {
+                this.logger.log('Skipping folder: ' + folder);
+                continue;
+            }
             // gets the first level of data
             const s3Folder = new this.S3File(folder, '', '', config[folder]);
             s3Folder.addFiles(this.getFilesForFolder(folder), config[folder]);
@@ -35,7 +39,7 @@ class ConfigInterpreter {
 
     getFilesForFolder(folder) {
         try {
-            return this.FS.readdirSync(folder);
+            return this.FS.lstatSync(folder).isDirectory() ? this.FS.readdirSync(folder) : [];
         } catch (error) {
             this.logger.log('Failed to get files for "' + folder + '"');
             return [];

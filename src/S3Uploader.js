@@ -1,5 +1,4 @@
 'use strict';
-
 class S3Uploader {
     constructor(s3, FS, logger) {
         this.s3 = s3;

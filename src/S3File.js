@@ -1,5 +1,7 @@
 'use strict';
 
+const mime = require('mime-types');
+
 class S3File {
     constructor(name, filePath, relativePath, settings) {
         this.files = [];
@@ -69,7 +71,7 @@ class S3File {
     }
 
     getContentType() {
-        return this.settings.contentType || 'text/plain';
+        return mime.lookup(this.getFilePath()) || this.settings.contentType || 'text/plain';
     }
 
     /**
