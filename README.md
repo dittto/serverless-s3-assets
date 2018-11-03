@@ -42,7 +42,7 @@ The code will trigger automatically during a `serverless deploy` and `serverless
 You can also carry out S3 deployment or removal independent from stack deployments:
 
 ```yaml
-sls s3delpoy
+sls s3deploy
 
 sls s3remove
 ```
